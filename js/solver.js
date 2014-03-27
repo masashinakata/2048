@@ -85,19 +85,12 @@ Solver.prototype.solve = (function () {
 	    for (var i = 0; i < size; i ++) {
 	      manager.grid  = original2.grid.clone();
 	      manager.score = original2.score;
-	      
-	      manager.grid.insertTile(new Tile(cells[i], 2));
 
-	      var r2 = dfs.call(this, manager, depth + 1);
+	      manager.grid.insertTile(new Tile(cells[i], Math.random() < 0.9 ? 2 : 4));
 
-	      manager.grid  = original2.grid.clone();
-	      manager.score = original2.score;
-	      
-	      manager.grid.insertTile(new Tile(cells[i], 4));
+	      var r = dfs.call(this, manager, depth + 1);
 
-	      var r4 = dfs.call(this, manager, depth + 1);
-
-	      scores[direction] += r2.score * 0.9 + r4.score * 0.1;
+	      scores[direction] += r.score;
 	    }
 	    
 	    scores[direction] /= size;
