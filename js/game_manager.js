@@ -288,5 +288,5 @@ GameManager.prototype.tick = function () {
     var direction = self.solver.solve(self);
     
     GameManager.prototype.move.call(self, direction);
-  }, 50);
+  }, 100);
 };
