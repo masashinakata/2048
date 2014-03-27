@@ -121,28 +121,15 @@ Solver.prototype.solve = (function () {
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
-    var flags = [false, false, false, false];
+    manager.grid = original.grid.clone();
 
-    var max_score = -1, max_direction = -1;
-
-    for (var direction = 0; direction < 4; direction ++) {
-      manager.grid  = original.grid.clone();
-      manager.score = original.score;
-
-      if (flags[direction] = this.simulate(manager, direction)) {
-	if (manager.score > max_score) {
-	  max_score = manager.score;
-
-	  max_direction = direction;
-	}
-      }
-    }
+    var r = dfs.call(this, manager, 0);
 
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    if (max_direction != -1) {
-      return max_direction;
+    if (r.direction != -1) {
+      return r.direction;
     }
     else {
       return Math.floor(Math.random() * 4);
