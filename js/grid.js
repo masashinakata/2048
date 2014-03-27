@@ -115,3 +115,20 @@ Grid.prototype.serialize = function () {
     cells: cellState
   };
 };
+
+Grid.prototype.clone = function () {
+  var grid = new Grid(this.size, false);
+  
+  for (var x = 0; x < this.size; x++) {
+    var row = grid.cells[x];
+    
+    for (var y = 0; y < this.size; y++) {
+      var cell = this.cells[x][y];
+      
+      if (cell)
+        row[y] = cell.clone();
+    }
+  }
+  
+  return grid;
+};
