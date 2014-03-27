@@ -60,31 +60,76 @@ Solver.prototype.simulate = (function () {
 })();
 
 Solver.prototype.solve = (function () {
-  return function (manager) {
+  var MAX_DEPTH = 2;
+
+  function dfs(manager, depth) {
+    var scores = [0, 0, 0, 0];
+
     var original = { grid: manager.grid, score: manager.score };
-
-    var flags = [false, false, false, false];
-
-    var max_score = -1, max_direction = -1;
 
     for (var direction = 0; direction < 4; direction ++) {
       manager.grid  = original.grid.clone();
       manager.score = original.score;
 
-      if (flags[direction] = this.simulate(manager, direction)) {
-	if (manager.score > max_score) {
-	  max_score = manager.score;
+      if (this.simulate(manager, direction)) {
+	if (depth == MAX_DEPTH) {
+	  scores[direction] = manager.score;
+	}
+	else {
+	  var cells = manager.grid.availableCells();
+	  var size  = cells.length;
+	  
+	  if (size) {
+	    var original2 = { grid: manager.grid, score: manager.score };
+	    
+	    for (var i = 0; i < size; i ++) {
+	      manager.grid  = original2.grid.clone();
+	      manager.score = original2.score;
+	      
+	      manager.grid.insertTile(new Tile(cells[i], 2));
 
-	  max_direction = direction;
+	      var r2 = dfs.call(this, manager, depth + 1);
+
+	      manager.grid  = original2.grid.clone();
+	      manager.score = original2.score;
+	      
+	      manager.grid.insertTile(new Tile(cells[i], 4));
+
+	      var r4 = dfs.call(this, manager, depth + 1);
+
+	      scores[direction] += r2.score * 0.9 + r4.score * 0.1;
+	    }
+	    
+	    scores[direction] /= size;
+	  }
 	}
       }
     }
+    
+    var max_score = -1, max_direction = -1;
+
+    for (var direction = 0; direction < 4; direction ++) {
+      if (scores[direction] > max_score) {
+	max_direction = direction;
+	max_score     = scores[direction];
+      }
+    }
+
+    return { direction: max_direction, score: max_score };
+  };
+
+  return function (manager) {
+    var original = { grid: manager.grid, score: manager.score };
+
+    manager.grid = original.grid.clone();
+
+    var r = dfs.call(this, manager, 0);
 
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    if (max_direction != -1) {
-      return max_direction;
+    if (r.direction != -1) {
+      return r.direction;
     }
     else {
       return Math.floor(Math.random() * 4);
