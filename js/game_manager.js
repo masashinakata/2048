@@ -3,6 +3,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager   = new InputManager;
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
+  this.solver         = new Solver;
 
   this.startTiles     = 2;
 
@@ -60,6 +61,8 @@ GameManager.prototype.setup = function () {
 
   // Update the actuator
   this.actuate();
+
+  this.tick();
 };
 
 // Set up the initial tiles to start the game with
@@ -192,6 +195,8 @@ GameManager.prototype.move = function (direction) {
 
     this.actuate();
   }
+
+  this.tick();
 };
 
 // Get the vector representing the chosen direction
@@ -273,4 +278,14 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+GameManager.prototype.tick = function () {
+  var self = this;
+  
+  window.setTimeout(function () {
+    var direction = self.solver.solve(self);
+    
+    GameManager.prototype.move.call(self, direction);
+  }, 100);
 };
