@@ -1,10 +1,7 @@
 function Solver() {
 }
 
-Solver.prototype.simultate = (function () {
-})();
-
-Solver.prototype.solve = (function () {
+Solver.prototype.simulate = (function () {
   function move(direction) {
     // 0: up, 1: right, 2: down, 3: left
     var self = this;
@@ -56,7 +53,13 @@ Solver.prototype.solve = (function () {
 
     return moved;
   }
-  
+
+  return function (manager, direction) {
+    return move.call(manager, direction);
+  }
+})();
+
+Solver.prototype.solve = (function () {
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
@@ -68,7 +71,7 @@ Solver.prototype.solve = (function () {
       manager.grid  = original.grid.clone();
       manager.score = original.score;
 
-      if (flags[direction] = move.call(manager, direction)) {
+      if (flags[direction] = this.simulate(manager, direction)) {
 	if (manager.score > max_score) {
 	  max_score = manager.score;
 
