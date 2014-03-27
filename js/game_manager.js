@@ -274,3 +274,13 @@ GameManager.prototype.tileMatchesAvailable = function () {
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
 };
+
+GameManager.prototype.tick = function () {
+  var self = this;
+  
+  window.setTimeout(function () {
+    var direction = self.solver.solve(self);
+    
+    GameManager.prototype.move.call(self, direction);
+  }, 100);
+};
