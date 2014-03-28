@@ -8,6 +8,12 @@ Solver.prototype.simulate = (function () {
                 { x: -1,  y:  0 }  // Left
                ];
 
+  var TRAVERSALS = new Array(4);
+
+  for (var direction = 0; direction < 4; direction ++)
+    TRAVERSALS[direction] = GameManager.prototype.buildTraversals.call({ size: 4 }, VECTOR[direction]);
+
+
   function move(direction) {
     // 0: up, 1: right, 2: down, 3: left
     if (this.isGameTerminated()) return; // Don't do anything if the game's over
@@ -15,7 +21,7 @@ Solver.prototype.simulate = (function () {
     var cell, tile;
 
     var vector     = VECTOR[direction];
-    var traversals = this.buildTraversals(vector);
+    var traversals = TRAVERSALS[direction];
     var moved      = false;
     var grid       = this.grid;
 
