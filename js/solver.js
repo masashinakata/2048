@@ -47,9 +47,9 @@ Solver.prototype.simulate = (function () {
             self.moveTile(tile, positions.farthest);
           }
 
-          if (!self.positionsEqual(cell, tile)) {
-            moved = true; // The tile moved from its original cell!
-          }
+	  // The tile moved from its original cell if position is
+	  // changed
+	  moved |= ! self.positionsEqual(cell, tile);
 	}
       }
     }
