@@ -60,7 +60,8 @@ Solver.prototype.simulate = (function () {
 })();
 
 Solver.prototype.solve = (function () {
-  var MAX_DEPTH = 2;
+  var MAX_DEPTH = 4;
+  var MAX_CELLS = 2;
 
   function dfs(manager, depth) {
     var scores = [0, 0, 0, 0];
@@ -78,8 +79,14 @@ Solver.prototype.solve = (function () {
 	else {
 	  var cells = manager.grid.availableCells();
 	  var size  = cells.length;
-	  
+
 	  if (size) {
+	    shuffle(cells);
+
+	    cells.splice(MAX_CELLS);
+
+	    size = cells.length;
+
 	    var original2 = { grid: manager.grid, score: manager.score };
 	    
 	    for (var i = 0; i < size; i ++) {
@@ -101,6 +108,11 @@ Solver.prototype.solve = (function () {
     
     return scores;
   };
+
+  function shuffle(a) {
+    for (var i = a.length, j; j = Math.floor(Math.random() * i), i --; )
+      a[i] = [a[j], a[j] = a[i]][0];
+  }
 
   function max_direction(scores) {
     var max_direction = -1, max_score = -1;
