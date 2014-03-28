@@ -88,9 +88,9 @@ Solver.prototype.solve = (function () {
 
 	      manager.grid.insertTile(new Tile(cells[i], Math.random() < 0.9 ? 2 : 4));
 
-	      var r = dfs.call(this, manager, depth + 1);
+	      var s = dfs.call(this, manager, depth + 1);
 
-	      scores[direction] += r.score;
+	      scores[direction] += Math.max.apply(undefined, s);
 	    }
 	    
 	    scores[direction] /= size;
@@ -99,33 +99,31 @@ Solver.prototype.solve = (function () {
       }
     }
     
-    var max_score = -1, max_direction = -1;
+    return scores;
+  };
 
-    for (var direction = 0; direction < 4; direction ++) {
+  function max_direction(scores) {
+    var max_direction = -1, max_score = -1;
+
+    for (var direction = 0; direction < 4; direction ++)
       if (scores[direction] > max_score) {
 	max_direction = direction;
 	max_score     = scores[direction];
       }
-    }
 
-    return { direction: max_direction, score: max_score };
-  };
+    return max_direction;
+  }
 
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
     manager.grid = original.grid.clone();
 
-    var r = dfs.call(this, manager, 0);
+    var scores = dfs.call(this, manager, 0);
 
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    if (r.direction != -1) {
-      return r.direction;
-    }
-    else {
-      return Math.floor(Math.random() * 4);
-    }
+    return max_direction(scores);
   };
 })();
