@@ -119,16 +119,11 @@ Solver.prototype.solve = (function () {
 
     manager.grid = original.grid.clone();
 
-    var r = dfs.call(this, manager, 0);
+    var scores = dfs.call(this, manager, 0);
 
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    if (r.direction != -1) {
-      return r.direction;
-    }
-    else {
-      return Math.floor(Math.random() * 4);
-    }
+    return max_direction(scores);
   };
 })();
