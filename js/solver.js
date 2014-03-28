@@ -4,8 +4,6 @@ function Solver() {
 Solver.prototype.simulate = (function () {
   function move(direction) {
     // 0: up, 1: right, 2: down, 3: left
-    var self = this;
-
     if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
     var cell, tile;
@@ -24,32 +22,32 @@ Solver.prototype.simulate = (function () {
     for (var i = 0, size1 = xx.length; i < size1; i ++) {
       for (var j = 0, size2 = yy.length; j < size2; j ++) {
 	cell = { x: xx[i], y: yy[j] };
-	tile = self.grid.cellContent(cell);
+	tile = this.grid.cellContent(cell);
 
 	if (tile) {
-          var positions = self.findFarthestPosition(cell, vector);
-          var next      = self.grid.cellContent(positions.next);
+          var positions = this.findFarthestPosition(cell, vector);
+          var next      = this.grid.cellContent(positions.next);
 
           // Only one merger per row traversal?
           if (next && next.value === tile.value && !next.mergedFrom) {
             var merged = new Tile(positions.next, tile.value * 2);
             merged.mergedFrom = [tile, next];
 
-            self.grid.insertTile(merged);
-            self.grid.removeTile(tile);
+            this.grid.insertTile(merged);
+            this.grid.removeTile(tile);
 
             // Converge the two tiles' positions
             tile.updatePosition(positions.next);
 
             // Update the score
-            self.score += merged.value;
+            this.score += merged.value;
           } else {
-            self.moveTile(tile, positions.farthest);
+            this.moveTile(tile, positions.farthest);
           }
 
 	  // The tile moved from its original cell if position is
 	  // changed
-	  moved |= ! self.positionsEqual(cell, tile);
+	  moved |= ! this.positionsEqual(cell, tile);
 	}
       }
     }
