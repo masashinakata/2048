@@ -102,6 +102,18 @@ Solver.prototype.solve = (function () {
     return scores;
   };
 
+  function max_direction(scores) {
+    var max_direction = -1, max_score = -1;
+
+    for (var direction = 0; direction < 4; direction ++)
+      if (scores[direction] > max_score) {
+	max_direction = direction;
+	max_score     = scores[direction];
+      }
+
+    return max_direction;
+  }
+
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
