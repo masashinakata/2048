@@ -2,13 +2,19 @@ function Solver() {
 }
 
 Solver.prototype.simulate = (function () {
+  var VECTOR = [{ x:  0,  y: -1 }, // Up
+                { x:  1,  y:  0 }, // Right
+                { x:  0,  y:  1 }, // Down
+                { x: -1,  y:  0 }  // Left
+               ];
+
   function move(direction) {
     // 0: up, 1: right, 2: down, 3: left
     if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
     var cell, tile;
 
-    var vector     = this.getVector(direction);
+    var vector     = VECTOR[direction];
     var traversals = this.buildTraversals(vector);
     var moved      = false;
     var grid       = this.grid;
