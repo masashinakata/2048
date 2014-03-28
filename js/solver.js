@@ -11,6 +11,7 @@ Solver.prototype.simulate = (function () {
     var vector     = this.getVector(direction);
     var traversals = this.buildTraversals(vector);
     var moved      = false;
+    var grid       = this.grid;
 
     // Save the current tile positions and remove merger information
     this.prepareTiles();
@@ -22,19 +23,19 @@ Solver.prototype.simulate = (function () {
     for (var i = 0, size1 = xx.length; i < size1; i ++) {
       for (var j = 0, size2 = yy.length; j < size2; j ++) {
 	cell = { x: xx[i], y: yy[j] };
-	tile = this.grid.cellContent(cell);
+	tile = grid.cellContent(cell);
 
 	if (tile) {
           var positions = this.findFarthestPosition(cell, vector);
-          var next      = this.grid.cellContent(positions.next);
+          var next      = grid.cellContent(positions.next);
 
           // Only one merger per row traversal?
           if (next && next.value === tile.value && !next.mergedFrom) {
             var merged = new Tile(positions.next, tile.value * 2);
             merged.mergedFrom = [tile, next];
 
-            this.grid.insertTile(merged);
-            this.grid.removeTile(tile);
+            grid.insertTile(merged);
+            grid.removeTile(tile);
 
             // Converge the two tiles' positions
             tile.updatePosition(positions.next);
