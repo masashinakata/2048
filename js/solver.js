@@ -83,7 +83,7 @@ Solver.prototype.solve = (function () {
 	  if (size) {
 	    shuffle(cells);
 
-	    cells.splice(MAX_CELLS);
+	    cells.splice(Math.floor(Math.random() * MAX_CELLS + 1));
 
 	    size = cells.length;
 
