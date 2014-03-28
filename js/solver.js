@@ -17,10 +17,13 @@ Solver.prototype.simulate = (function () {
     // Save the current tile positions and remove merger information
     this.prepareTiles();
 
+    // Shortcut for traversals
+    var xx = traversals.x, yy = traversals.y;
+
     // Traverse the grid in the right direction and move tiles
-    traversals.x.forEach(function (x) {
-      traversals.y.forEach(function (y) {
-	cell = { x: x, y: y };
+    for (var i = 0, size1 = xx.length; i < size1; i ++) {
+      for (var j = 0, size2 = yy.length; j < size2; j ++) {
+	cell = { x: xx[i], y: yy[j] };
 	tile = self.grid.cellContent(cell);
 
 	if (tile) {
@@ -48,8 +51,8 @@ Solver.prototype.simulate = (function () {
             moved = true; // The tile moved from its original cell!
           }
 	}
-      });
-    });
+      }
+    }
 
     return moved;
   }
