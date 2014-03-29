@@ -74,7 +74,7 @@ Solver.prototype.simulate = (function () {
 })();
 
 Solver.prototype.solve = (function () {
-  var MAX_DEPTH = 5;
+  var MAX_DEPTH = 6;
   var MAX_CELLS = 2;
 
   function dfs(manager, depth) {
