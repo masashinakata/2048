@@ -87,8 +87,10 @@ Solver.prototype.solve = (function () {
       manager.score = original.score;
 
       if (this.simulate(manager, direction)) {
+	var score = manager.score - original.score;
+
 	if (depth == MAX_DEPTH) {
-	  scores[direction] = manager.score;
+	  scores[direction] = score;
 	}
 	else {
 	  var cells = manager.grid.availableCells();
@@ -111,7 +113,7 @@ Solver.prototype.solve = (function () {
 
 	      var s = dfs.call(this, manager, depth + 1);
 
-	      scores[direction] += Math.max.apply(undefined, s);
+	      scores[direction] += score + Math.max.apply(undefined, s);
 	    }
 	    
 	    scores[direction] /= size;
