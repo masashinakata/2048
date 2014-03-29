@@ -201,17 +201,18 @@ GameManager.prototype.move = function (direction) {
 };
 
 // Get the vector representing the chosen direction
-GameManager.prototype.getVector = function (direction) {
+GameManager.prototype.getVector = (function () {
   // Vectors representing tile movement
-  var map = {
-    0: { x: 0,  y: -1 }, // Up
-    1: { x: 1,  y: 0 },  // Right
-    2: { x: 0,  y: 1 },  // Down
-    3: { x: -1, y: 0 }   // Left
+  var map = [{ x: 0,  y: -1 }, // Up
+	     { x: 1,  y: 0 },  // Right
+	     { x: 0,  y: 1 },  // Down
+	     { x: -1, y: 0 }   // Left
+	    ];
+  
+  return function (direction) {
+    return map[direction];
   };
-
-  return map[direction];
-};
+})();
 
 // Build a list of positions to traverse in the right order
 GameManager.prototype.buildTraversals = function (vector) {

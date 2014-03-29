@@ -2,54 +2,68 @@ function Solver() {
 }
 
 Solver.prototype.simulate = (function () {
+  var VECTOR = [{ x:  0,  y: -1 }, // Up
+                { x:  1,  y:  0 }, // Right
+                { x:  0,  y:  1 }, // Down
+                { x: -1,  y:  0 }  // Left
+               ];
+
+  var TRAVERSALS = new Array(4);
+
+  for (var direction = 0; direction < 4; direction ++)
+    TRAVERSALS[direction] = GameManager.prototype.buildTraversals.call({ size: 4 }, VECTOR[direction]);
+
+
   function move(direction) {
     // 0: up, 1: right, 2: down, 3: left
-    var self = this;
-
     if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
     var cell, tile;
 
-    var vector     = this.getVector(direction);
-    var traversals = this.buildTraversals(vector);
+    var vector     = VECTOR[direction];
+    var traversals = TRAVERSALS[direction];
     var moved      = false;
+    var grid       = this.grid;
 
     // Save the current tile positions and remove merger information
     this.prepareTiles();
 
+    // Shortcut for traversals
+    var xx = traversals.x, yy = traversals.y;
+
     // Traverse the grid in the right direction and move tiles
-    traversals.x.forEach(function (x) {
-      traversals.y.forEach(function (y) {
-	cell = { x: x, y: y };
-	tile = self.grid.cellContent(cell);
+    for (var i = 0, size1 = xx.length; i < size1; i ++) {
+      for (var j = 0, size2 = yy.length; j < size2; j ++) {
+	cell = { x: xx[i], y: yy[j] };
+	tile = grid.cellContent(cell);
 
 	if (tile) {
-          var positions = self.findFarthestPosition(cell, vector);
-          var next      = self.grid.cellContent(positions.next);
+          var positions = this.findFarthestPosition(cell, vector);
+          var next      = grid.cellContent(positions.next);
 
           // Only one merger per row traversal?
           if (next && next.value === tile.value && !next.mergedFrom) {
             var merged = new Tile(positions.next, tile.value * 2);
             merged.mergedFrom = [tile, next];
 
-            self.grid.insertTile(merged);
-            self.grid.removeTile(tile);
+            grid.insertTile(merged);
+            grid.removeTile(tile);
 
             // Converge the two tiles' positions
             tile.updatePosition(positions.next);
 
             // Update the score
-            self.score += merged.value;
+            this.score += merged.value;
           } else {
-            self.moveTile(tile, positions.farthest);
+            this.moveTile(tile, positions.farthest);
           }
 
-          if (!self.positionsEqual(cell, tile)) {
-            moved = true; // The tile moved from its original cell!
-          }
+	  // The tile moved from its original cell if position is
+	  // changed
+	  moved |= ! this.positionsEqual(cell, tile);
 	}
-      });
-    });
+      }
+    }
 
     return moved;
   }
@@ -60,7 +74,7 @@ Solver.prototype.simulate = (function () {
 })();
 
 Solver.prototype.solve = (function () {
-  var MAX_DEPTH = 4;
+  var MAX_DEPTH = 6;
   var MAX_CELLS = 2;
 
   function dfs(manager, depth) {
@@ -73,8 +87,10 @@ Solver.prototype.solve = (function () {
       manager.score = original.score;
 
       if (this.simulate(manager, direction)) {
+	var score = manager.score - original.score;
+
 	if (depth == MAX_DEPTH) {
-	  scores[direction] = manager.score;
+	  scores[direction] = score;
 	}
 	else {
 	  var cells = manager.grid.availableCells();
@@ -83,7 +99,7 @@ Solver.prototype.solve = (function () {
 	  if (size) {
 	    shuffle(cells);
 
-	    cells.splice(MAX_CELLS);
+	    cells.splice(Math.floor(Math.random() * MAX_CELLS + 1));
 
 	    size = cells.length;
 
@@ -97,7 +113,7 @@ Solver.prototype.solve = (function () {
 
 	      var s = dfs.call(this, manager, depth + 1);
 
-	      scores[direction] += Math.max.apply(undefined, s);
+	      scores[direction] += score + Math.max.apply(undefined, s);
 	    }
 	    
 	    scores[direction] /= size;
