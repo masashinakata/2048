@@ -158,6 +158,13 @@ Solver.prototype.solve = (function () {
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    return max_direction(scores);
+    var direction = max_direction(scores);
+    
+    if (direction != -1) {
+      return direction;
+    }
+    else {
+      return Math.floor(Math.random() * 4);
+    }
   };
 })();
