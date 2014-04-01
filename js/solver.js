@@ -89,7 +89,11 @@ Solver.prototype.solve = (function () {
       if (this.simulate(manager, direction)) {
 	var score = manager.score - original.score;
 
-	if (depth == MAX_DEPTH) {
+	var DEPTH =
+	  manager.score <  2222 ? Math.max(MAX_DEPTH - 2, 0) :
+	  manager.score < 11111 ? Math.max(MAX_DEPTH - 1, 0) : MAX_DEPTH;
+
+	if (depth >= DEPTH) {
 	  scores[direction] = score;
 	}
 	else {
@@ -106,8 +110,10 @@ Solver.prototype.solve = (function () {
 	    var original2 = { grid: manager.grid, score: manager.score };
 	    
 	    for (var i = 0; i < size; i ++) {
-	      manager.grid  = original2.grid.clone();
-	      manager.score = original2.score;
+	      if (size > 1) {
+		manager.grid  = original2.grid.clone();
+		manager.score = original2.score;
+	      }
 
 	      manager.grid.insertTile(new Tile(cells[i], Math.random() < 0.9 ? 2 : 4));
 
@@ -152,6 +158,13 @@ Solver.prototype.solve = (function () {
     manager.grid  = original.grid;
     manager.score = original.score;
 
-    return max_direction(scores);
+    var direction = max_direction(scores);
+    
+    if (direction != -1) {
+      return direction;
+    }
+    else {
+      return Math.floor(Math.random() * 4);
+    }
   };
 })();
