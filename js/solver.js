@@ -106,8 +106,10 @@ Solver.prototype.solve = (function () {
 	    var original2 = { grid: manager.grid, score: manager.score };
 	    
 	    for (var i = 0; i < size; i ++) {
-	      manager.grid  = original2.grid.clone();
-	      manager.score = original2.score;
+	      if (size > 1) {
+		manager.grid  = original2.grid.clone();
+		manager.score = original2.score;
+	      }
 
 	      manager.grid.insertTile(new Tile(cells[i], Math.random() < 0.9 ? 2 : 4));
 
