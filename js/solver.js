@@ -89,7 +89,11 @@ Solver.prototype.solve = (function () {
       if (this.simulate(manager, direction)) {
 	var score = manager.score - original.score;
 
-	if (depth == MAX_DEPTH) {
+	var DEPTH =
+	  manager.score <  2222 ? Math.max(MAX_DEPTH - 2, 0) :
+	  manager.score < 11111 ? Math.max(MAX_DEPTH - 1, 0) : MAX_DEPTH;
+
+	if (depth >= DEPTH) {
 	  scores[direction] = score;
 	}
 	else {
