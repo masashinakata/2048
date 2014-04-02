@@ -164,6 +164,18 @@ Solver.prototype.solve = (function () {
 
     var scores = dfs.call(this, manager, 0);
 
+    if (false)
+      document.querySelector('.title').innerHTML =
+        scores[0][0] + '/' + scores[0][1] + ',' +
+        scores[1][0] + '/' + scores[1][1] + ',' +
+        scores[2][0] + '/' + scores[2][1] + ',' +
+        scores[3][0] + '/' + scores[3][1];
+    
+    scores = [scores[0][0] / scores[0][1],
+	      scores[1][0] / scores[1][1],
+	      scores[2][0] / scores[2][1],
+	      scores[3][0] / scores[3][1]]
+    
     manager.grid  = original.grid;
     manager.score = original.score;
 
