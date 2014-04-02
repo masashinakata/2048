@@ -74,62 +74,76 @@ Solver.prototype.simulate = (function () {
 })();
 
 Solver.prototype.solve = (function () {
-  var MAX_DEPTH = 6;
-  var MAX_CELLS = 2;
+  var MAX_DEPTH          = 32;
+  var MIN_SURVIVING_PATH = 40;
+  var MAX_PLAYOUTS       = 33333;
 
   function dfs(manager, depth) {
-    var scores = [0, 0, 0, 0];
+    if (depth == 0) {
+      var counts   = [0, 0, 0, 0];
+      var playouts = [0, 0, 0, 0];
 
-    var original = { grid: manager.grid, score: manager.score };
+      var original = { grid: manager.grid, score: manager.score };
 
-    for (var direction = 0; direction < 4; direction ++) {
-      manager.grid  = original.grid.clone();
-      manager.score = original.score;
+      while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
+	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
+	  break;
 
-      if (this.simulate(manager, direction)) {
-	var score = manager.score - original.score;
+	if (counts.count(-1) == 4)
+	  break;
 
-	var DEPTH =
-	  manager.score <  2222 ? Math.max(MAX_DEPTH - 2, 0) :
-	  manager.score < 11111 ? Math.max(MAX_DEPTH - 1, 0) : MAX_DEPTH;
+	for (var direction = 0; direction < 4; direction ++) {
+	  if (counts[direction] == -1)
+	    continue;
 
-	if (depth >= DEPTH) {
-	  scores[direction] = score;
-	}
-	else {
-	  var cells = manager.grid.availableCells();
-	  var size  = cells.length;
+	  playouts[direction] ++;
 
-	  if (size) {
+	  manager.grid  = original.grid.clone();
+	  manager.score = original.score;
+	  
+	  if (this.simulate(manager, direction)) {
+	    var cells = manager.grid.availableCells();
+	    
 	    cells.shuffle();
 
-	    cells.splice(Math.floor(Math.random() * MAX_CELLS + 1));
+	    manager.grid.insertTile(new Tile(cells[0], Math.random() < 0.9 ? 2 : 4));
 
-	    size = cells.length;
-
-	    var original2 = { grid: manager.grid, score: manager.score };
-	    
-	    for (var i = 0; i < size; i ++) {
-	      if (size > 1) {
-		manager.grid  = original2.grid.clone();
-		manager.score = original2.score;
-	      }
-
-	      manager.grid.insertTile(new Tile(cells[i], Math.random() < 0.9 ? 2 : 4));
-
-	      var s = dfs.call(this, manager, depth + 1);
-
-	      scores[direction] += score + Math.max.apply(undefined, s);
-	    }
-	    
-	    scores[direction] /= size;
+	    if (dfs.call(this, manager, depth + 1))
+	      counts[direction] ++;
+	  }
+	  else {
+	    counts[direction] = -1;
 	  }
 	}
       }
+
+      return [[counts[0], playouts[0]],
+	      [counts[1], playouts[1]],
+	      [counts[2], playouts[2]],
+	      [counts[3], playouts[3]]];
     }
-    
-    return scores;
-  };
+    else if (depth == MAX_DEPTH) {
+      return true;
+    }
+    else {
+      var directions = [0, 1, 2, 3];
+
+      directions.shuffle();
+
+      for (var i = 0; i < 4; i ++)
+	if (this.simulate(manager, directions[i])) {
+	  var cells = manager.grid.availableCells();
+	  
+	  cells.shuffle();
+
+	  manager.grid.insertTile(new Tile(cells[0], Math.random() < 0.9 ? 2 : 4));
+
+	  return dfs.call(this, manager, depth + 1);
+	}
+
+      return false;
+    }
+  }
 
   function max_direction(scores) {
     var max_direction = -1, max_score = -1;
