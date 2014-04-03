@@ -129,9 +129,8 @@ Solver.prototype.solve = (function () {
 	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	  break;
 
-	for (var direction = 0; direction < 4; direction ++) {
-	  if (counts[direction] == -1)
-	    continue;
+	for (var i = 0; i < size; i ++) {
+	  var direction = directions[i];
 
 	  playouts[direction] ++;
 
@@ -147,9 +146,6 @@ Solver.prototype.solve = (function () {
 
 	    if (dfs.call(this, manager, depth + 1))
 	      counts[direction] ++;
-	  }
-	  else {
-	    counts[direction] = -1;
 	  }
 	}
       }
