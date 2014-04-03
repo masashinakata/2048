@@ -89,8 +89,14 @@ Solver.prototype.solve = (function () {
 	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	  break;
 
-	if (counts.count(-1) == 4)
+	var c = counts.count(-1);
+
+	if (c == 4)
 	  break;
+
+	if (c == 3)
+	  if (Math.max.apply(null, counts) > 0)
+	    break;
 
 	for (var direction = 0; direction < 4; direction ++) {
 	  if (counts[direction] == -1)
