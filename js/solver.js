@@ -163,6 +163,12 @@ Solver.prototype.solve = (function () {
     return max_direction;
   }
 
+  var TITLE = null;
+
+  function title() {
+    return TITLE || (TITLE = document.querySelector('.title'));
+  }
+
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
@@ -188,9 +194,13 @@ Solver.prototype.solve = (function () {
     var direction = max_direction(scores);
     
     if (direction != -1) {
+      title().innerHTML = '2048';
+
       return direction;
     }
     else {
+      title().innerHTML = '2048*';
+
       return Math.floor(Math.random() * 4);
     }
   };
