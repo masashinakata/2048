@@ -89,8 +89,14 @@ Solver.prototype.solve = (function () {
 	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	  break;
 
-	if (counts.count(-1) == 4)
+	var c = counts.count(-1);
+
+	if (c == 4)
 	  break;
+
+	if (c == 3)
+	  if (Math.max.apply(null, counts) > 0)
+	    break;
 
 	for (var direction = 0; direction < 4; direction ++) {
 	  if (counts[direction] == -1)
@@ -103,10 +109,10 @@ Solver.prototype.solve = (function () {
 	  
 	  if (this.simulate(manager, direction)) {
 	    var cells = manager.grid.availableCells();
-	    
-	    cells.shuffle();
 
-	    manager.grid.insertTile(new Tile(cells[0], Math.random() < 0.9 ? 2 : 4));
+	    var cell = cells[Math.floor(Math.random() * cells.length)];
+	    
+	    manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
 
 	    if (dfs.call(this, manager, depth + 1))
 	      counts[direction] ++;
@@ -157,6 +163,12 @@ Solver.prototype.solve = (function () {
     return max_direction;
   }
 
+  var TITLE = null;
+
+  function title() {
+    return TITLE || (TITLE = document.querySelector('.title'));
+  }
+
   return function (manager) {
     var original = { grid: manager.grid, score: manager.score };
 
@@ -182,9 +194,13 @@ Solver.prototype.solve = (function () {
     var direction = max_direction(scores);
     
     if (direction != -1) {
+      title().innerHTML = '2048';
+
       return direction;
     }
     else {
+      title().innerHTML = '2048*';
+
       return Math.floor(Math.random() * 4);
     }
   };
