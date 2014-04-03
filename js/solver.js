@@ -114,7 +114,12 @@ Solver.prototype.solve = (function () {
 	}
       }
 
-      if (directions.length == 0)
+      var size = directions.length;
+
+      if (size == 1)
+	counts[directions[0]] = 999;
+
+      if (size <= 1)
 	return [[counts[0], playouts[0]],
 		[counts[1], playouts[1]],
 		[counts[2], playouts[2]],
