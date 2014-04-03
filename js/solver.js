@@ -109,10 +109,10 @@ Solver.prototype.solve = (function () {
 	  
 	  if (this.simulate(manager, direction)) {
 	    var cells = manager.grid.availableCells();
-	    
-	    cells.shuffle();
 
-	    manager.grid.insertTile(new Tile(cells[0], Math.random() < 0.9 ? 2 : 4));
+	    var cell = cells[Math.floor(Math.random() * cells.length)];
+	    
+	    manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
 
 	    if (dfs.call(this, manager, depth + 1))
 	      counts[direction] ++;
