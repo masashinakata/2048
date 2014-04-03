@@ -80,11 +80,46 @@ Solver.prototype.solve = (function () {
 
   function dfs(manager, depth) {
     if (depth == 0) {
-      var counts   = [0, 0, 0, 0];
-      var playouts = [0, 0, 0, 0];
-
       var original = { grid: manager.grid, score: manager.score };
 
+      var directions = [0, 1, 2, 3];
+
+      var pickles  = [null, null, null, null];
+      var counts   = [0, 0, 0, 0];
+      var playouts = [1, 1, 1, 1];
+      
+      for (var direction = 3; direction >= 0; direction --) {
+	manager.grid  = original.grid.clone();
+	manager.score = original.score;
+	
+	if (this.simulate(manager, direction)) {
+	  pickles[direction] = { grid: manager.grid, score: manager.score};
+
+	  // Playout once.
+	  manager.grid = manager.grid.clone();
+
+	  var cells = manager.grid.availableCells();
+
+	  var cell = cells[Math.floor(Math.random() * cells.length)];
+	    
+	  manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
+	  
+	  if (dfs.call(this, manager, depth + 1))
+	    counts[direction] ++;
+	}
+	else {
+	  directions.splice(direction, 1);
+
+	  counts[direction] = -1;
+	}
+      }
+
+      if (directions.length == 0)
+	return [[counts[0], playouts[0]],
+		[counts[1], playouts[1]],
+		[counts[2], playouts[2]],
+		[counts[3], playouts[3]]];
+      
       while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
 	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	  break;
