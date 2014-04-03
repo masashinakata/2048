@@ -119,34 +119,29 @@ Solver.prototype.solve = (function () {
       if (size == 1)
 	counts[directions[0]] = 999;
 
-      if (size <= 1)
-	return [[counts[0], playouts[0]],
-		[counts[1], playouts[1]],
-		[counts[2], playouts[2]],
-		[counts[3], playouts[3]]];
-      
-      while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
-	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
-	  break;
-
-	for (var i = 0; i < size; i ++) {
-	  var direction = directions[i];
-
-	  playouts[direction] ++;
-
-	  manager.grid  = pickles[direction].grid.clone();
-	  manager.score = pickles[direction].score;
-
-	  var cells = manager.grid.availableCells();
-
-	  var cell = cells[Math.floor(Math.random() * cells.length)];
+      if (size > 1)
+	while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
+	  if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
+	    break;
 	  
-	  manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
-
-	  if (dfs.call(this, manager, depth + 1))
-	    counts[direction] ++;
+	  for (var i = 0; i < size; i ++) {
+	    var direction = directions[i];
+	    
+	    playouts[direction] ++;
+	    
+	    manager.grid  = pickles[direction].grid.clone();
+	    manager.score = pickles[direction].score;
+	    
+	    var cells = manager.grid.availableCells();
+	    
+	    var cell = cells[Math.floor(Math.random() * cells.length)];
+	    
+	    manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
+	    
+	    if (dfs.call(this, manager, depth + 1))
+	      counts[direction] ++;
+	  }
 	}
-      }
 
       return [[counts[0], playouts[0]],
 	      [counts[1], playouts[1]],
