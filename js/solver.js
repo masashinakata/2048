@@ -134,19 +134,17 @@ Solver.prototype.solve = (function () {
 
 	  playouts[direction] ++;
 
-	  manager.grid  = original.grid.clone();
-	  manager.score = original.score;
+	  manager.grid  = pickles[direction].grid.clone();
+	  manager.score = pickles[direction].score;
+
+	  var cells = manager.grid.availableCells();
+
+	  var cell = cells[Math.floor(Math.random() * cells.length)];
 	  
-	  if (this.simulate(manager, direction)) {
-	    var cells = manager.grid.availableCells();
+	  manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
 
-	    var cell = cells[Math.floor(Math.random() * cells.length)];
-	    
-	    manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
-
-	    if (dfs.call(this, manager, depth + 1))
-	      counts[direction] ++;
-	  }
+	  if (dfs.call(this, manager, depth + 1))
+	    counts[direction] ++;
 	}
       }
 
