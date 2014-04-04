@@ -128,8 +128,8 @@ Solver.prototype.solve = (function () {
 
 	  var n = Math.sum.apply(null, playouts);
 
-	  for (var i = 0; i < size; i ++) {
-	    var direction = directions[i];
+	  for (var j = 0; j < size; j ++) {
+	    var direction = directions[j];
 
 	    var nj = playouts[direction];
 	    
