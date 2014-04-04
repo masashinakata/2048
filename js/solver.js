@@ -123,24 +123,39 @@ Solver.prototype.solve = (function () {
 	while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
 	  if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	    break;
-	  
+
+	  var max_ucb = -1, max_direction = -1;
+
+	  var n = Math.sum.apply(null, playouts);
+
 	  for (var i = 0; i < size; i ++) {
 	    var direction = directions[i];
+
+	    var nj = playouts[direction];
 	    
-	    playouts[direction] ++;
-	    
-	    manager.grid  = pickles[direction].grid.clone();
-	    manager.score = pickles[direction].score;
-	    
-	    var cells = manager.grid.availableCells();
-	    
-	    var cell = cells[Math.floor(Math.random() * cells.length)];
-	    
-	    manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
-	    
-	    if (dfs.call(this, manager, depth + 1))
-	      counts[direction] ++;
+	    var ucb = counts[direction] / nj + Math.sqrt(2 * Math.log(n) / nj);
+
+	    if (ucb > max_ucb) {
+	      max_direction = direction;
+	      max_ucb       = ucb;
+	    }
 	  }
+
+	  var direction = max_direction;
+	  
+	  playouts[direction] ++;
+	  
+	  manager.grid  = pickles[direction].grid.clone();
+	  manager.score = pickles[direction].score;
+	  
+	  var cells = manager.grid.availableCells();
+	  
+	  var cell = cells[Math.floor(Math.random() * cells.length)];
+	  
+	  manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
+	  
+	  if (dfs.call(this, manager, depth + 1))
+	    counts[direction] ++;
 	}
 
       return [[counts[0], playouts[0]],
