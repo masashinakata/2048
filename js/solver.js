@@ -120,7 +120,7 @@ Solver.prototype.solve = (function () {
 	counts[directions[0]] = 999;
 
       if (size > 1)
-	while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
+	for (var i = 0; i < MAX_PLAYOUTS; i ++) {
 	  if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	    break;
 
