@@ -211,6 +211,8 @@ Solver.prototype.solve = (function () {
 
     var scores = dfs.call(this, manager, 0);
 
+    var playouts = scores[0][1] + scores[1][1] + scores[2][1] + scores[3][1];
+
     if (false)
       document.querySelector('.title').innerHTML =
         scores[0][0] + '/' + scores[0][1] + ',' +
