@@ -231,12 +231,12 @@ Solver.prototype.solve = (function () {
     var direction = max_direction(scores);
     
     if (direction != -1) {
-      title().innerHTML = '2048';
+      title().innerHTML = '2048' + (playouts < MAX_PLAYOUTS ? '' : '*');
 
       return direction;
     }
     else {
-      title().innerHTML = '2048*';
+      title().innerHTML = '2048' + '!';
 
       return Math.floor(Math.random() * 4);
     }
