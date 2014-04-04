@@ -124,6 +124,8 @@ Solver.prototype.solve = (function () {
 	  if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
 	    break;
 
+	  directions.shuffle();
+
 	  var max_ucb = -1, max_direction = -1;
 
 	  var n = Math.sum.apply(null, playouts);
