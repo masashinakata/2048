@@ -119,34 +119,44 @@ Solver.prototype.solve = (function () {
       if (size == 1)
 	counts[directions[0]] = 999;
 
-      if (size <= 1)
-	return [[counts[0], playouts[0]],
-		[counts[1], playouts[1]],
-		[counts[2], playouts[2]],
-		[counts[3], playouts[3]]];
-      
-      while (Math.sum.apply(null, playouts) < MAX_PLAYOUTS) {
-	if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
-	  break;
+      if (size > 1)
+	for (var i = 0; i < MAX_PLAYOUTS; i ++) {
+	  if (Math.sum.apply(null, counts) >= MIN_SURVIVING_PATH)
+	    break;
 
-	for (var i = 0; i < size; i ++) {
-	  var direction = directions[i];
+	  var max_ucb = -1, max_direction = -1;
 
+	  var n = Math.sum.apply(null, playouts);
+
+	  for (var j = 0; j < size; j ++) {
+	    var direction = directions[j];
+
+	    var nj = playouts[direction];
+	    
+	    var ucb = counts[direction] / nj + Math.sqrt(2 * Math.log(n) / nj);
+
+	    if (ucb > max_ucb) {
+	      max_direction = direction;
+	      max_ucb       = ucb;
+	    }
+	  }
+
+	  var direction = max_direction;
+	  
 	  playouts[direction] ++;
-
+	  
 	  manager.grid  = pickles[direction].grid.clone();
 	  manager.score = pickles[direction].score;
-
+	  
 	  var cells = manager.grid.availableCells();
-
+	  
 	  var cell = cells[Math.floor(Math.random() * cells.length)];
 	  
 	  manager.grid.insertTile(new Tile(cell, Math.random() < 0.9 ? 2 : 4));
-
+	  
 	  if (dfs.call(this, manager, depth + 1))
 	    counts[direction] ++;
 	}
-      }
 
       return [[counts[0], playouts[0]],
 	      [counts[1], playouts[1]],
@@ -201,6 +211,8 @@ Solver.prototype.solve = (function () {
 
     var scores = dfs.call(this, manager, 0);
 
+    var playouts = scores[0][1] + scores[1][1] + scores[2][1] + scores[3][1];
+
     if (false)
       document.querySelector('.title').innerHTML =
         scores[0][0] + '/' + scores[0][1] + ',' +
@@ -219,12 +231,12 @@ Solver.prototype.solve = (function () {
     var direction = max_direction(scores);
     
     if (direction != -1) {
-      title().innerHTML = '2048';
+      title().innerHTML = '2048' + (playouts < MAX_PLAYOUTS ? '' : '*');
 
       return direction;
     }
     else {
-      title().innerHTML = '2048*';
+      title().innerHTML = '2048' + '!';
 
       return Math.floor(Math.random() * 4);
     }
